@@ -16,4 +16,8 @@ app.use((err, req, res, next) => {
   } else next(err);
 });
 
+app.use((err, req, res, next) => {
+  res.status(err.cause).send({ msg: err.message });
+});
+
 module.exports = app;

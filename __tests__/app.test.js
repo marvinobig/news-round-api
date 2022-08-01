@@ -75,10 +75,18 @@ describe("GET /api/articles/:article_id", () => {
   });
   test("status:404, should return error message when path is not found", () => {
     return request(app)
-      .get("/api/article/5")
+      .get("/api/article/12")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Route Not Found");
+      });
+  });
+  test("status:404, should return error message when id given is not available", () => {
+    return request(app)
+      .get("/api/articles/20")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID Not Found");
       });
   });
 });
