@@ -5,3 +5,13 @@ exports.fetchTopics = async () => {
 
   return topics;
 };
+
+exports.fetchArticleById = async (id) => {
+  const article = await db.query("SELECT * FROM articles WHERE article_id=$1", [
+    id,
+  ]);
+
+  if (article.rows.length === 0) {
+    throw new Error("ID Not Found", { cause: 404 });
+  } else return article;
+};
