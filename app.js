@@ -1,7 +1,13 @@
 const express = require("express");
 const app = express();
-const router = app.Router();
+const api_routes = require("./routes/api.router");
 
 app.use(express.json());
 
-module.exports = { app, router };
+app.use("/api", api_routes);
+
+app.all("/*", (req, res) => {
+  res.status(404).send({ msg: "Route Not Found" });
+});
+
+module.exports = app;
