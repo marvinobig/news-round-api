@@ -50,7 +50,6 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/5")
       .then(({ body: { rows: article } }) => {
-        console.log(article, "test");
         expect(article).toBeInstanceOf(Array);
 
         expect(article[0]).toEqual(
@@ -83,3 +82,22 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+// describe.only("PATCH /api/articles/:article_id", () => {
+//   test("status:200, should return a status of 200", () => {
+//     return request(app).patch("/api/articles/5").expect(204);
+//   });
+//   test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
+//     return request(app)
+//       .get("/api/articles/5")
+//       .then(({ body: { rows: article } }) => {});
+//   });
+//   test("status:400, should return error message when request is bad", () => {
+//     return request(app)
+//       .get("/api/articles/bb")
+//       .expect(400)
+//       .then(({ body }) => {
+//         expect(body.msg).toBe("Invalid Request");
+//       });
+//   });
+// });
