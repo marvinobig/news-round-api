@@ -8,17 +8,13 @@ exports.fetchTopics = async () => {
 
 exports.fetchArticleById = async (id) => {
   const article = await db.query(
-    "SELECT * FROM articles WHERE article_id=$1;",
-    [id]
-  );
-  const commentsNum = await db.query(
-    "SELECT comments.body FROM articles JOIN comments ON articles.article_id=comments.article_id WHERE articles.article_id=$1;",
+    "SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id WHERE articles.article_id=$1 GROUP BY articles.article_id;",
     [id]
   );
 
   if (article.rows.length === 0) {
     throw new Error("ID Not Found", { cause: 404 });
-  } else article.rows[0]["comment_count"] = commentsNum.rowCount;
+  } else article.rows[0].comment_count = Number(article.rows[0].comment_count);
 
   return article.rows;
 };
@@ -28,18 +24,22 @@ exports.updateArticleById = async (id, inc_votes) => {
     throw new Error("Request Body is Missing Some Fields", { cause: 400 });
   }
 
-  const updatedArticle = await db.query(
+  const updateArticle = await db.query(
     "UPDATE articles SET votes = votes + $2 WHERE article_id=$1 RETURNING *;",
     [id, inc_votes]
   );
-  const commentsNum = await db.query(
-    "SELECT comments.body FROM articles JOIN comments ON articles.article_id=comments.article_id WHERE articles.article_id=$1;",
+
+  const updatedArticle = await db.query(
+    "SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id WHERE articles.article_id=$1 GROUP BY articles.article_id;",
     [id]
   );
 
-  if (updatedArticle.rows.length === 0) {
+  if (updateArticle.rows.length === 0) {
     throw new Error(`Article ${id} Not Found`, { cause: 404 });
-  } else updatedArticle.rows[0]["comment_count"] = commentsNum.rowCount;
+  } else
+    updatedArticle.rows[0].comment_count = Number(
+      updatedArticle.rows[0].comment_count
+    );
 
   return updatedArticle;
 };
