@@ -29,4 +29,6 @@ exports.updateArticleById = async (id, inc_votes) => {
   if (updatedArticle.rows.length === 0) {
     throw new Error(`Article ${id} Not Found`, { cause: 404 });
   }
+
+  return updatedArticle;
 };
