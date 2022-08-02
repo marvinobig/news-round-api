@@ -24,7 +24,7 @@ exports.updateArticleById = async (id, inc_votes) => {
     throw new Error("Request Body is Missing Some Fields", { cause: 400 });
   }
 
-  const updateArticle = await db.query(
+  const changeArticle = await db.query(
     "UPDATE articles SET votes = votes + $2 WHERE article_id=$1 RETURNING *;",
     [id, inc_votes]
   );
@@ -34,7 +34,7 @@ exports.updateArticleById = async (id, inc_votes) => {
     [id]
   );
 
-  if (updateArticle.rows.length === 0) {
+  if (changeArticle.rows.length === 0) {
     throw new Error(`Article ${id} Not Found`, { cause: 404 });
   } else
     updatedArticle.rows[0].comment_count = Number(
