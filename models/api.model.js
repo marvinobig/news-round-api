@@ -3,7 +3,7 @@ const db = require("../db/connection");
 exports.fetchTopics = async () => {
   const topics = await db.query("SELECT * FROM topics");
 
-  return topics;
+  return topics.rows;
 };
 
 exports.fetchArticleById = async (id) => {
@@ -13,7 +13,7 @@ exports.fetchArticleById = async (id) => {
 
   if (article.rows.length === 0) {
     throw new Error("ID Not Found", { cause: 404 });
-  } else return article;
+  } else return article.rows;
 };
 
 exports.updateArticleById = async (id, inc_votes) => {
@@ -31,4 +31,10 @@ exports.updateArticleById = async (id, inc_votes) => {
   }
 
   return updatedArticle;
+};
+
+exports.fetchUsers = async () => {
+  const users = await db.query("SELECT * FROM users");
+
+  return users.rows;
 };

@@ -2,11 +2,11 @@ const {
   fetchTopics,
   fetchArticleById,
   updateArticleById,
+  fetchUsers,
 } = require("../models/api.model");
 
 exports.getTopicsController = async (req, res, next) => {
   const topics = await fetchTopics();
-
   res.status(200).send(topics);
 };
 
@@ -26,8 +26,13 @@ exports.updateArticleByIdController = async (req, res, next) => {
     const inc_votesNum = req.body.inc_votes;
     const updatedArticle = await updateArticleById(id, inc_votesNum);
 
-    res.status(200).send({ updatedArticle });
+    res.status(200).send(updatedArticle.rows);
   } catch (err) {
     next(err);
   }
+};
+
+exports.getUsersController = async (req, res, next) => {
+  const users = await fetchUsers();
+  res.status(200).send(users);
 };

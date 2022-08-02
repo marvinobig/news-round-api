@@ -19,7 +19,7 @@ describe("GET /api/topics", () => {
   test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
     return request(app)
       .get("/api/topics")
-      .then(({ body: { rows: topics } }) => {
+      .then(({ body: topics }) => {
         expect(topics).toBeInstanceOf(Array);
 
         topics.forEach((topic) => {
@@ -49,7 +49,7 @@ describe("GET /api/articles/:article_id", () => {
   test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at & votes properties", () => {
     return request(app)
       .get("/api/articles/5")
-      .then(({ body: { rows: article } }) => {
+      .then(({ body: article }) => {
         expect(article).toBeInstanceOf(Array);
 
         expect(article[0]).toEqual(
@@ -100,25 +100,18 @@ describe("PATCH /api/articles/:article_id", () => {
     const inc_votes = { inc_votes: 2 };
     const article = await request(app)
       .get("/api/articles/5")
-      .then(({ body }) => {
-        const article = body.rows[0];
-
-        return article;
+      .then(({ body: article }) => {
+        return article[0];
       });
 
     return request(app)
       .patch("/api/articles/5")
       .send(inc_votes)
       .expect(200)
-      .then(() => {
-        return request(app)
-          .get("/api/articles/5")
-          .then(({ body }) => {
-            const updatedArticle = body.rows[0];
-            article.votes += inc_votes.inc_votes;
+      .then(({ body: updatedArticle }) => {
+        article.votes += inc_votes.inc_votes;
 
-            expect(article).toEqual(updatedArticle);
-          });
+        expect(article).toEqual(updatedArticle[0]);
       });
   });
   test("status:400, should return error when given a bad object in the request body", () => {
@@ -149,6 +142,37 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(inc_votes)
       .then(({ body }) => {
         expect(body.msg).toBe("Article 100 Not Found");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("status:200, should return a status of 200", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
+    return request(app)
+      .get("/api/users")
+      .then(({ body: users }) => {
+        expect(users).toBeInstanceOf(Array);
+
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("status:404, should return error message when path is not found", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route Not Found");
       });
   });
 });
