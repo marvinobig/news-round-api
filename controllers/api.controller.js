@@ -26,7 +26,7 @@ exports.updateArticleByIdController = async (req, res, next) => {
     const inc_votesNum = req.body.inc_votes;
     const updatedArticle = await updateArticleById(id, inc_votesNum);
 
-    res.status(200).send(updatedArticle);
+    res.status(200).send(updatedArticle.rows);
   } catch (err) {
     next(err);
   }
