@@ -110,15 +110,10 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/5")
       .send(inc_votes)
       .expect(200)
-      .then(() => {
-        return request(app)
-          .get("/api/articles/5")
-          .then(({ body }) => {
-            const updatedArticle = body.rows[0];
-            article.votes += inc_votes.inc_votes;
+      .then(({ body: { rows: updatedArticle } }) => {
+        article.votes += inc_votes.inc_votes;
 
-            expect(article).toEqual(updatedArticle);
-          });
+        expect(article).toEqual(updatedArticle[0]);
       });
   });
   test("status:400, should return error when given a bad object in the request body", () => {
