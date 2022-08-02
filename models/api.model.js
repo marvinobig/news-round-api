@@ -24,7 +24,7 @@ exports.updateArticleById = async (id, inc_votes) => {
     throw new Error("Request Body is Missing Some Fields", { cause: 400 });
   }
 
-  const updateArticle = await db.query(
+  const changeArticle = await db.query(
     "UPDATE articles SET votes = votes + $2 WHERE article_id=$1 RETURNING *;",
     [id, inc_votes]
   );
@@ -34,7 +34,7 @@ exports.updateArticleById = async (id, inc_votes) => {
     [id]
   );
 
-  if (updateArticle.rows.length === 0) {
+  if (changeArticle.rows.length === 0) {
     throw new Error(`Article ${id} Not Found`, { cause: 404 });
   } else
     updatedArticle.rows[0].comment_count = Number(
@@ -48,4 +48,18 @@ exports.fetchUsers = async () => {
   const users = await db.query("SELECT * FROM users");
 
   return users.rows;
+};
+
+exports.fetchArticles = async () => {
+  const articles = await db.query(
+    "SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;"
+  );
+
+  articles.rows.forEach((article) => {
+    article.comment_count = Number(article.comment_count);
+  });
+
+  console.log(articles.rows);
+
+  return articles.rows;
 };
