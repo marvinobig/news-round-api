@@ -46,7 +46,7 @@ describe("GET /api/articles/:article_id", () => {
   test("status:200, should return a status of 200", () => {
     return request(app).get("/api/articles/5").expect(200);
   });
-  test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
+  test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at & votes properties", () => {
     return request(app)
       .get("/api/articles/5")
       .then(({ body: { rows: article } }) => {
@@ -91,21 +91,64 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-// describe.only("PATCH /api/articles/:article_id", () => {
-//   test("status:200, should return a status of 200", () => {
-//     return request(app).patch("/api/articles/5").expect(204);
-//   });
-//   test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
-//     return request(app)
-//       .get("/api/articles/5")
-//       .then(({ body: { rows: article } }) => {});
-//   });
-//   test("status:400, should return error message when request is bad", () => {
-//     return request(app)
-//       .get("/api/articles/bb")
-//       .expect(400)
-//       .then(({ body }) => {
-//         expect(body.msg).toBe("Invalid Request");
-//       });
-//   });
-// });
+describe("PATCH /api/articles/:article_id", () => {
+  test("status:200, should return a status of 200", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app).patch("/api/articles/5").send(inc_votes).expect(200);
+  });
+  test("status:200, should return the article with the vote property updated", async () => {
+    const inc_votes = { inc_votes: 2 };
+    const article = await request(app)
+      .get("/api/articles/5")
+      .then(({ body }) => {
+        const article = body.rows[0];
+
+        return article;
+      });
+
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(200)
+      .then(() => {
+        return request(app)
+          .get("/api/articles/5")
+          .then(({ body }) => {
+            const updatedArticle = body.rows[0];
+            article.votes += inc_votes.inc_votes;
+
+            expect(article).toEqual(updatedArticle);
+          });
+      });
+  });
+  test("status:400, should return error when given a bad object in the request body", () => {
+    const inc_votes = { inc_votes: "fff" };
+
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  test("status:400, should return error when given an empty object", () => {
+    const inc_votes = {};
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:404, should return error when article does not exist", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/100")
+      .send(inc_votes)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article 100 Not Found");
+      });
+  });
+});
