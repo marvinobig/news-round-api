@@ -15,3 +15,14 @@ exports.fetchArticleById = async (id) => {
     throw new Error("ID Not Found", { cause: 404 });
   } else return article;
 };
+
+exports.updateArticleById = async (id, newVote) => {
+  if (newVote === undefined) {
+    throw new Error("Request Body is Missing Some Fields", { cause: 400 });
+  }
+
+  const updatedArticle = await db.query(
+    "UPDATE articles SET votes = votes + $2 WHERE article_id=$1 RETURNING *;",
+    [id, newVote]
+  );
+};
