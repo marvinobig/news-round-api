@@ -61,8 +61,10 @@ describe("GET /api/articles/:article_id", () => {
             body: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
+            comment_count: expect.any(Number),
           })
         );
+        expect(article[0].comment_count).toBe(2);
       });
   });
   test("status:400, should return error message when request is bad", () => {
