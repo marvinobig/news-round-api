@@ -3,9 +3,10 @@ const {
   fetchArticleById,
   updateArticleById,
   fetchUsers,
+  fetchArticles,
 } = require("../models/api.model");
 
-exports.getTopicsController = async (req, res, next) => {
+exports.getTopicsController = async (req, res) => {
   const topics = await fetchTopics();
   res.status(200).send(topics);
 };
@@ -32,7 +33,12 @@ exports.updateArticleByIdController = async (req, res, next) => {
   }
 };
 
-exports.getUsersController = async (req, res, next) => {
+exports.getUsersController = async (req, res) => {
   const users = await fetchUsers();
   res.status(200).send(users);
+};
+
+exports.getArticlesController = async (req, res) => {
+  const articles = await fetchArticles();
+  res.status(200).send(articles);
 };

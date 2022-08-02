@@ -46,7 +46,7 @@ describe("GET /api/articles/:article_id", () => {
   test("status:200, should return a status of 200", () => {
     return request(app).get("/api/articles/5").expect(200);
   });
-  test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at & votes properties", () => {
+  test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
     return request(app)
       .get("/api/articles/5")
       .then(({ body: article }) => {
@@ -172,6 +172,42 @@ describe("GET /api/users", () => {
   test("status:404, should return error message when path is not found", () => {
     return request(app)
       .get("/api/user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route Not Found");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("status:200, should return a status of 200", () => {
+    return request(app).get("/api/articles").expect(200);
+  });
+  test("status:200, should respond with an array of an article objects containing article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body: articles }) => {
+        expect(articles).toBeInstanceOf(Array);
+
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("status:404, should return error message when path is not found", () => {
+    return request(app)
+      .get("/api/article")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Route Not Found");
