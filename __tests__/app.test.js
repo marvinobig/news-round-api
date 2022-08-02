@@ -205,6 +205,21 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("status:200, should respond with array of article objects ordered by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body: articles }) => {
+        let isOrdered = true;
+
+        for (let i = 1; i < articles.length; i++) {
+          if (articles[i].created_at > articles[i - 1].created_at) {
+            isOrdered = false;
+          }
+        }
+
+        expect(isOrdered).toBe(true);
+      });
+  });
   test("status:404, should return error message when path is not found", () => {
     return request(app)
       .get("/api/article")
