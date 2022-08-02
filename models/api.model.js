@@ -59,7 +59,5 @@ exports.fetchArticles = async () => {
     article.comment_count = Number(article.comment_count);
   });
 
-  console.log(articles.rows);
-
   return articles.rows;
 };
