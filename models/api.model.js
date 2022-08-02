@@ -16,13 +16,17 @@ exports.fetchArticleById = async (id) => {
   } else return article;
 };
 
-exports.updateArticleById = async (id, newVote) => {
-  if (newVote === undefined) {
+exports.updateArticleById = async (id, inc_votes) => {
+  if (inc_votes === undefined) {
     throw new Error("Request Body is Missing Some Fields", { cause: 400 });
   }
 
   const updatedArticle = await db.query(
     "UPDATE articles SET votes = votes + $2 WHERE article_id=$1 RETURNING *;",
-    [id, newVote]
+    [id, inc_votes]
   );
+
+  if (updatedArticle.rows.length === 0) {
+    throw new Error(`Article ${id} Not Found`, { cause: 404 });
+  }
 };

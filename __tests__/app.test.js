@@ -92,12 +92,12 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("status:204, should return a status of 204", () => {
-    const newVote = { newVote: 2 };
-    return request(app).patch("/api/articles/5").send(newVote).expect(204);
+  test("status:200, should return a status of 200", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app).patch("/api/articles/5").send(inc_votes).expect(200);
   });
-  test("status:204, should return the article with the vote property updated", async () => {
-    const newVote = { newVote: 2 };
+  test("status:200, should return the article with the vote property updated", async () => {
+    const inc_votes = { inc_votes: 2 };
     const article = await request(app)
       .get("/api/articles/5")
       .then(({ body }) => {
@@ -108,38 +108,47 @@ describe("PATCH /api/articles/:article_id", () => {
 
     return request(app)
       .patch("/api/articles/5")
-      .send(newVote)
-      .expect(204)
+      .send(inc_votes)
+      .expect(200)
       .then(() => {
         return request(app)
           .get("/api/articles/5")
           .then(({ body }) => {
             const updatedArticle = body.rows[0];
-            article.votes += newVote.newVote;
+            article.votes += inc_votes.inc_votes;
 
             expect(article).toEqual(updatedArticle);
           });
       });
   });
   test("status:400, should return error when given a bad object in the request body", () => {
-    const newVote = { newVote: "fff" };
+    const inc_votes = { inc_votes: "fff" };
 
     return request(app)
       .patch("/api/articles/5")
-      .send(newVote)
+      .send(inc_votes)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid Request");
       });
   });
   test("status:400, should return error when given an empty object", () => {
-    const newVote = {};
+    const inc_votes = {};
     return request(app)
       .patch("/api/articles/5")
-      .send(newVote)
+      .send(inc_votes)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:404, should return error when article does not exist", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/100")
+      .send(inc_votes)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article 100 Not Found");
       });
   });
 });

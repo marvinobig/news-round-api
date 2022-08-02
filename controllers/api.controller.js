@@ -23,10 +23,10 @@ exports.getArticleByIdController = async (req, res, next) => {
 exports.updateArticleByIdController = async (req, res, next) => {
   try {
     const id = Number(req.params.article_id);
-    const newVoteNum = req.body.newVote;
-    const uppdatedArticle = await updateArticleById(id, newVoteNum);
+    const inc_votesNum = req.body.inc_votes;
+    const updatedArticle = await updateArticleById(id, inc_votesNum);
 
-    res.sendStatus(204);
+    res.status(200).send({ updatedArticle });
   } catch (err) {
     next(err);
   }
