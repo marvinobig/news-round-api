@@ -6,12 +6,6 @@ exports.fetchTopics = async () => {
   return topics;
 };
 
-exports.fetchArticles = async () => {
-  const articles = await db.query("SELECT * FROM articles");
-
-  return articles;
-};
-
 exports.fetchArticleById = async (id) => {
   const article = await db.query("SELECT * FROM articles WHERE article_id=$1", [
     id,
@@ -37,4 +31,10 @@ exports.updateArticleById = async (id, inc_votes) => {
   }
 
   return updatedArticle;
+};
+
+exports.fetchUsers = async () => {
+  const users = await db.query("SELECT * FROM users");
+
+  return users;
 };

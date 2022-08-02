@@ -42,26 +42,22 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe("GET /api/users", () => {
   test("status:200, should return a status of 200", () => {
-    return request(app).get("/api/articles").expect(200);
+    return request(app).get("/api/users").expect(200);
   });
-  test("status:200, should respond with an array of article objects containing article_id, title, topic, author, body, created_at & votes properties", () => {
+  test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
     return request(app)
-      .get("/api/articles")
-      .then(({ body: { rows: articles } }) => {
-        expect(articles).toBeInstanceOf(Array);
+      .get("/api/users")
+      .then(({ body: { rows: users } }) => {
+        expect(users).toBeInstanceOf(Array);
 
-        articles.forEach((article) => {
-          expect(article).toEqual(
+        users.forEach((user) => {
+          expect(user).toEqual(
             expect.objectContaining({
-              article_id: expect.any(Number),
-              title: expect.any(String),
-              topic: expect.any(String),
-              author: expect.any(String),
-              body: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
             })
           );
         });
@@ -69,7 +65,7 @@ describe("GET /api/articles", () => {
   });
   test("status:404, should return error message when path is not found", () => {
     return request(app)
-      .get("/api/article")
+      .get("/api/user")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Route Not Found");
