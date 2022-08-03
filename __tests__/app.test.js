@@ -263,7 +263,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/5/comments")
       .send(newComment)
       .then(({ body: { newComment } }) => {
-        console.log(newComment);
         expect(newComment[0]).toBeInstanceOf(Object);
 
         expect(newComment[0]).toEqual(
