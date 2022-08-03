@@ -32,14 +32,7 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("status:404, should return error message when path is not found", () => {
-    return request(app)
-      .get("/api/topic")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route Not Found");
-      });
-  });
+  testFor404("get", "/api/topics", "/api/topic");
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -75,14 +68,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Invalid Request");
       });
   });
-  test("status:404, should return error message when path is not found", () => {
-    return request(app)
-      .get("/api/article/12")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route Not Found");
-      });
-  });
+  testFor404("get", "/api/articles/:article_id", "/api/article/5");
   test("status:404, should return error message when id given is not available", () => {
     return request(app)
       .get("/api/articles/20")
@@ -169,14 +155,7 @@ describe("GET /api/users", () => {
         });
       });
   });
-  test("status:404, should return error message when path is not found", () => {
-    return request(app)
-      .get("/api/user")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route Not Found");
-      });
-  });
+  testFor404("get", "/api/users", "/api/user");
 });
 
 describe("GET /api/articles", () => {
@@ -220,14 +199,7 @@ describe("GET /api/articles", () => {
         expect(isOrdered).toBe(true);
       });
   });
-  test("status:404, should return error message when path is not found", () => {
-    return request(app)
-      .get("/api/article")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route Not Found");
-      });
-  });
+  testFor404("get", "/api/articles", "/api/article");
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -261,20 +233,30 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Invalid Request");
       });
   });
-  test("status:404, should return error message when path is not found", () => {
-    return request(app)
-      .get("/api/article/5/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route Not Found");
-      });
-  });
-  test("status:404, should return error message when id given is not available", () => {
+  testFor404(
+    "get",
+    "/api/articles/:article_id/comments",
+    "/api/article/5/comment"
+  );
+  test("status:404, should return error message when id given has no comments", () => {
     return request(app)
       .get("/api/articles/20/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Comments For Article 20 Not Found");
+        expect(body.msg).toBe("Article 20 Has no Comments");
       });
   });
 });
+
+function testFor404(method, path, path404) {
+  describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
+    test("status:404, should return error message when path is not found", () => {
+      return request(app)
+        .get(`${path404}`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Route Not Found");
+        });
+    });
+  });
+}

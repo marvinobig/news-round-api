@@ -69,7 +69,7 @@ exports.fetchArticleCommentsById = async (id) => {
   );
 
   if (articleComments.rows.length === 0) {
-    throw new Error(`Comments For Article ${id} Not Found`, { cause: 404 });
+    throw new Error(`Article ${id} Has no Comments`, { cause: 404 });
   }
 
   return articleComments.rows;
