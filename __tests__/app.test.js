@@ -248,6 +248,13 @@ describe("GET /api/articles/:article_id/comments", () => {
   );
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  // test for 200 status response
+  // test for sending of data and 200 response of the data sent
+  // test for empty object sent to path
+  // test for bad data sent in object to path
+});
+
 function testFor404(method, path, path404) {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {
