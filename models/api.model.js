@@ -59,7 +59,18 @@ exports.fetchArticles = async () => {
     article.comment_count = Number(article.comment_count);
   });
 
-  console.log(articles.rows);
-
   return articles.rows;
+};
+
+exports.fetchArticleCommentsById = async (id) => {
+  const articleComments = await db.query(
+    "SELECT * FROM comments WHERE article_id=$1;",
+    [id]
+  );
+
+  if (articleComments.rows.length === 0) {
+    throw new Error(`Article ${id} Has no Comments`, { cause: 200 });
+  }
+
+  return articleComments.rows;
 };

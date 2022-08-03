@@ -4,6 +4,7 @@ const {
   updateArticleById,
   fetchUsers,
   fetchArticles,
+  fetchArticleCommentsById,
 } = require("../models/api.model");
 
 exports.getTopicsController = async (req, res) => {
@@ -41,4 +42,15 @@ exports.getUsersController = async (req, res) => {
 exports.getArticlesController = async (req, res) => {
   const articles = await fetchArticles();
   res.status(200).send(articles);
+};
+
+exports.getArticleCommentsByIdController = async (req, res, next) => {
+  try {
+    const id = Number(req.params.article_id);
+    const articleComments = await fetchArticleCommentsById(id);
+
+    res.status(200).send(articleComments);
+  } catch (err) {
+    next(err);
+  }
 };
