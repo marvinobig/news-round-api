@@ -128,6 +128,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/100")
       .send(inc_votes)
+      .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Article 100 Not Found");
       });
@@ -249,10 +250,63 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  // test for 200 status response
-  // test for sending of data and 200 response of the data sent
-  // test for empty object sent to path
-  // test for bad data sent in object to path
+  test("status:200, should respond with a status of 200", () => {
+    const newComment = { username: "rogersop", body: "this rocks" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(200);
+  });
+  test("status:200, should respond with the object that was sent", () => {
+    const newComment = { username: "rogersop", body: "this rocks" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .then(({ body: postedComment }) => {
+        expect(postedComment[0]).toBeInstanceOf(Object);
+
+        expect(postedComment[0]).toEqual(
+          expect.objectContaining({
+            article_id: 5,
+            author: "rogersop",
+            body: "this rocks",
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("status:400, should respond with error message when given an empty object", () => {
+    const newComment = {};
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:400, should respond with error message when given bad data", () => {
+    const newComment = { username: "", body: "" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body Includes Incorrect Data");
+      });
+  });
+  test("status: 400, should respond with an error message when article does not exist", () => {
+    const newComment = { username: "rogersop", body: "this rocks" };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body Includes Incorrect Data");
+      });
+  });
 });
 
 function testFor404(method, path, path404) {

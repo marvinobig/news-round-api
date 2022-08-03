@@ -19,7 +19,7 @@ exports.fetchArticleById = async (id) => {
   return article.rows;
 };
 
-exports.updateArticleById = async (id, inc_votes) => {
+exports.changeArticleById = async (id, inc_votes) => {
   if (inc_votes === undefined) {
     throw new Error("Request Body is Missing Some Fields", { cause: 400 });
   }
@@ -73,4 +73,15 @@ exports.fetchArticleCommentsById = async (id) => {
   }
 
   return articleComments.rows;
+};
+
+exports.insertArticleCommentById = async (id, commentData) => {
+  const { username, body } = commentData;
+
+  const insertComment = await db.query(
+    "INSERT INTO comments(article_id, author, body) VALUES ($1, $2, $3) RETURNING *",
+    [id, username, body]
+  );
+
+  return insertComment.rows;
 };
