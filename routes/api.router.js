@@ -6,6 +6,7 @@ const {
   updateArticleByIdController,
   getUsersController,
   getArticlesController,
+  getArticleCommentsByIdController,
 } = require("../controllers/api.controller");
 
 router.get("/topics", getTopicsController);
@@ -13,5 +14,6 @@ router.get("/articles/:article_id", getArticleByIdController);
 router.patch("/articles/:article_id", updateArticleByIdController);
 router.get("/users", getUsersController);
 router.get("/articles", getArticlesController);
+router.get("/articles/:article_id/comments", getArticleCommentsByIdController);
 
 module.exports = router;

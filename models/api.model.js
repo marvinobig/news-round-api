@@ -61,3 +61,16 @@ exports.fetchArticles = async () => {
 
   return articles.rows;
 };
+
+exports.fetchArticleCommentsById = async (id) => {
+  const articleComments = await db.query(
+    "SELECT * FROM comments WHERE article_id=$1;",
+    [id]
+  );
+
+  if (articleComments.rows.length === 0) {
+    throw new Error(`Comments For Article ${id} Not Found`, { cause: 404 });
+  }
+
+  return articleComments.rows;
+};

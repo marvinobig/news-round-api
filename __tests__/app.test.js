@@ -229,3 +229,52 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status:200, should return a status of 200", () => {
+    return request(app).get("/api/articles/5/comments").expect(200);
+  });
+  test("status:200, should respond with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .then(({ body: articleComments }) => {
+        expect(articleComments).toBeInstanceOf(Array);
+
+        articleComments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("status:400, should return error when given a bad id in the url path", () => {
+    return request(app)
+      .get("/api/articles/fff/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  test("status:404, should return error message when path is not found", () => {
+    return request(app)
+      .get("/api/article/5/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route Not Found");
+      });
+  });
+  test("status:404, should return error message when id given is not available", () => {
+    return request(app)
+      .get("/api/articles/20/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comments For Article 20 Not Found");
+      });
+  });
+});
