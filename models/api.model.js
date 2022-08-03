@@ -41,7 +41,7 @@ exports.changeArticleById = async (id, inc_votes) => {
       updatedArticle.rows[0].comment_count
     );
 
-  return updatedArticle;
+  return updatedArticle.rows;
 };
 
 exports.fetchUsers = async () => {

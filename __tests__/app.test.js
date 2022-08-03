@@ -19,7 +19,7 @@ describe("GET /api/topics", () => {
   test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
     return request(app)
       .get("/api/topics")
-      .then(({ body: topics }) => {
+      .then(({ body: { topics } }) => {
         expect(topics).toBeInstanceOf(Array);
 
         topics.forEach((topic) => {
@@ -42,7 +42,7 @@ describe("GET /api/articles/:article_id", () => {
   test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
     return request(app)
       .get("/api/articles/5")
-      .then(({ body: article }) => {
+      .then(({ body: { article } }) => {
         expect(article).toBeInstanceOf(Array);
 
         expect(article[0]).toEqual(
@@ -88,7 +88,7 @@ describe("PATCH /api/articles/:article_id", () => {
     const inc_votes = { inc_votes: 2 };
     const article = await request(app)
       .get("/api/articles/5")
-      .then(({ body: article }) => {
+      .then(({ body: { article } }) => {
         return article[0];
       });
 
@@ -96,7 +96,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/5")
       .send(inc_votes)
       .expect(200)
-      .then(({ body: updatedArticle }) => {
+      .then(({ body: { updatedArticle } }) => {
         article.votes += inc_votes.inc_votes;
 
         expect(article).toEqual(updatedArticle[0]);
@@ -142,7 +142,7 @@ describe("GET /api/users", () => {
   test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
     return request(app)
       .get("/api/users")
-      .then(({ body: users }) => {
+      .then(({ body: { users } }) => {
         expect(users).toBeInstanceOf(Array);
 
         users.forEach((user) => {
@@ -166,7 +166,7 @@ describe("GET /api/articles", () => {
   test("status:200, should respond with an array of an article objects containing article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
     return request(app)
       .get("/api/articles")
-      .then(({ body: articles }) => {
+      .then(({ body: { articles } }) => {
         expect(articles).toBeInstanceOf(Array);
 
         articles.forEach((article) => {
@@ -188,7 +188,7 @@ describe("GET /api/articles", () => {
   test("status:200, should respond with array of article objects ordered by date in descending order", () => {
     return request(app)
       .get("/api/articles")
-      .then(({ body: articles }) => {
+      .then(({ body: { articles } }) => {
         let isOrdered = true;
 
         for (let i = 1; i < articles.length; i++) {
@@ -210,7 +210,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("status:200, should respond with an array of comments for the given article_id", () => {
     return request(app)
       .get("/api/articles/5/comments")
-      .then(({ body: articleComments }) => {
+      .then(({ body: { articleComments } }) => {
         expect(articleComments).toBeInstanceOf(Array);
 
         articleComments.forEach((comment) => {
@@ -262,10 +262,11 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/5/comments")
       .send(newComment)
-      .then(({ body: postedComment }) => {
-        expect(postedComment[0]).toBeInstanceOf(Object);
+      .then(({ body: { newComment } }) => {
+        console.log(newComment);
+        expect(newComment[0]).toBeInstanceOf(Object);
 
-        expect(postedComment[0]).toEqual(
+        expect(newComment[0]).toEqual(
           expect.objectContaining({
             article_id: 5,
             author: "rogersop",
