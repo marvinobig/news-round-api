@@ -225,6 +225,14 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("status:200, should respond with a message when id given has no comments", () => {
+    return request(app)
+      .get("/api/articles/20/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article 20 Has no Comments");
+      });
+  });
   test("status:400, should return error when given a bad id in the url path", () => {
     return request(app)
       .get("/api/articles/fff/comments")
@@ -238,14 +246,6 @@ describe("GET /api/articles/:article_id/comments", () => {
     "/api/articles/:article_id/comments",
     "/api/article/5/comment"
   );
-  test("status:404, should return error message when id given has no comments", () => {
-    return request(app)
-      .get("/api/articles/20/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Article 20 Has no Comments");
-      });
-  });
 });
 
 function testFor404(method, path, path404) {
