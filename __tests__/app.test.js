@@ -281,24 +281,28 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Request Body is Missing Some Fields");
       });
   });
-  test("status:400, should respond with error message when given bad data", () => {
-    const newComment = { username: "", body: "" };
+  test("status:404, should respond with error message when given username that does not exist", () => {
+    const newComment = { username: 444, body: "" };
     return request(app)
       .post("/api/articles/5/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Request Body Includes Incorrect Data");
+        expect(body.msg).toBe(
+          'Key (author)=(444) is not present in table "users".'
+        );
       });
   });
-  test("status: 400, should respond with an error message when article or username is incorrect", () => {
+  test("status: 404, should respond with an error message when article does not exist", () => {
     const newComment = { username: "rogerso", body: "this rocks" };
     return request(app)
       .post("/api/articles/100/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Request Body Includes Incorrect Data");
+        expect(body.msg).toBe(
+          'Key (article_id)=(100) is not present in table "articles".'
+        );
       });
   });
 });

@@ -73,6 +73,7 @@ exports.postArticleCommentByIdController = async (req, res, next) => {
 
     res.status(201).send(newCommentObj);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
