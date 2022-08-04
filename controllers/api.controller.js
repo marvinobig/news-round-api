@@ -48,13 +48,11 @@ exports.getUsersController = async (req, res) => {
 
 exports.getArticlesController = async (req, res, next) => {
   try {
-    console.log(req.query);
     const { sort_by, order_by, filter } = req.query;
     const articles = await fetchArticles(sort_by, order_by, filter);
     const articlesObj = { articles };
     res.status(200).send(articlesObj);
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
