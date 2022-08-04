@@ -43,9 +43,9 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/5")
       .then(({ body: { article } }) => {
-        expect(article).toBeInstanceOf(Array);
+        expect(article).toBeInstanceOf(Object);
 
-        expect(article[0]).toEqual(
+        expect(article).toEqual(
           expect.objectContaining({
             article_id: expect.any(Number),
             title: expect.any(String),
@@ -57,7 +57,7 @@ describe("GET /api/articles/:article_id", () => {
             comment_count: expect.any(Number),
           })
         );
-        expect(article[0].comment_count).toBe(2);
+        expect(article.comment_count).toBe(2);
       });
   });
   test("status:400, should return error message when request is bad", () => {
@@ -89,7 +89,7 @@ describe("PATCH /api/articles/:article_id", () => {
     const article = await request(app)
       .get("/api/articles/5")
       .then(({ body: { article } }) => {
-        return article[0];
+        return article;
       });
 
     return request(app)
@@ -99,7 +99,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body: { updatedArticle } }) => {
         article.votes += inc_votes.inc_votes;
 
-        expect(article).toEqual(updatedArticle[0]);
+        expect(article).toEqual(updatedArticle);
       });
   });
   test("status:400, should return error when given a bad object in the request body", () => {
@@ -257,9 +257,9 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body: { newComment } }) => {
-        expect(newComment[0]).toBeInstanceOf(Object);
+        expect(newComment).toBeInstanceOf(Object);
 
-        expect(newComment[0]).toEqual(
+        expect(newComment).toEqual(
           expect.objectContaining({
             article_id: 5,
             author: "rogersop",
@@ -288,9 +288,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          'Key (author)=(444) is not present in table "users".'
-        );
+        expect(body.msg).toBe("Username or Article Does Not Exist");
       });
   });
   test("status:404, should respond with an error message when given article does not exist", () => {
@@ -300,9 +298,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          'Key (article_id)=(100) is not present in table "articles".'
-        );
+        expect(body.msg).toBe("Username or Article Does Not Exist");
       });
   });
 });

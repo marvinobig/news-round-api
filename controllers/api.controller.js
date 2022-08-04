@@ -19,7 +19,7 @@ exports.getArticleByIdController = async (req, res, next) => {
   try {
     const id = Number(req.params.article_id);
     const article = await fetchArticleById(id);
-    const articleObj = { article };
+    const articleObj = { article: article[0] };
 
     res.status(200).send(articleObj);
   } catch (err) {
@@ -32,7 +32,7 @@ exports.updateArticleByIdController = async (req, res, next) => {
     const id = Number(req.params.article_id);
     const inc_votesNum = req.body.inc_votes;
     const updatedArticle = await changeArticleById(id, inc_votesNum);
-    const updatedArticleObj = { updatedArticle };
+    const updatedArticleObj = { updatedArticle: updatedArticle[0] };
 
     res.status(200).send(updatedArticleObj);
   } catch (err) {
@@ -69,11 +69,10 @@ exports.postArticleCommentByIdController = async (req, res, next) => {
     const commentData = req.body;
     const id = Number(req.params.article_id);
     const newComment = await insertArticleCommentById(id, commentData);
-    const newCommentObj = { newComment };
+    const newCommentObj = { newComment: newComment[0] };
 
     res.status(201).send(newCommentObj);
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };

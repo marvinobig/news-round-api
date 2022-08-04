@@ -18,7 +18,7 @@ app.use((err, req, res, next) => {
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Request Body is Missing Some Fields" });
   } else if (err.code === "23503") {
-    res.status(404).send({ msg: err.detail });
+    res.status(404).send({ msg: "Username or Article Does Not Exist" });
   } else next(err);
 });
 
