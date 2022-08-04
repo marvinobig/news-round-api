@@ -250,18 +250,12 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  test("status:200, should respond with a status of 200", () => {
+  test("status:201, should respond with the object that was sent", () => {
     const newComment = { username: "rogersop", body: "this rocks" };
     return request(app)
       .post("/api/articles/5/comments")
       .send(newComment)
-      .expect(200);
-  });
-  test("status:200, should respond with the object that was sent", () => {
-    const newComment = { username: "rogersop", body: "this rocks" };
-    return request(app)
-      .post("/api/articles/5/comments")
-      .send(newComment)
+      .expect(201)
       .then(({ body: { newComment } }) => {
         expect(newComment[0]).toBeInstanceOf(Object);
 
@@ -297,8 +291,8 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Request Body Includes Incorrect Data");
       });
   });
-  test("status: 400, should respond with an error message when article does not exist", () => {
-    const newComment = { username: "rogersop", body: "this rocks" };
+  test("status: 400, should respond with an error message when article or username is incorrect", () => {
+    const newComment = { username: "rogerso", body: "this rocks" };
     return request(app)
       .post("/api/articles/100/comments")
       .send(newComment)

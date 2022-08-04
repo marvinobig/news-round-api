@@ -71,7 +71,7 @@ exports.postArticleCommentByIdController = async (req, res, next) => {
     const newComment = await insertArticleCommentById(id, commentData);
     const newCommentObj = { newComment };
 
-    res.status(200).send(newCommentObj);
+    res.status(201).send(newCommentObj);
   } catch (err) {
     next(err);
   }
