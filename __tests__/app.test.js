@@ -32,7 +32,7 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  testFor404("get", "/api/topics", "/api/topic");
+  testFor404("get", "/api/topics", "/api/topic", "Route Not Found");
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -68,7 +68,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Invalid Request");
       });
   });
-  testFor404("get", "/api/articles/:article_id", "/api/article/5");
+  testFor404(
+    "get",
+    "/api/articles/:article_id",
+    "/api/article/5",
+    "Route Not Found"
+  );
   test("status:404, should return error message when id given is not available", () => {
     return request(app)
       .get("/api/articles/20")
@@ -156,7 +161,7 @@ describe("GET /api/users", () => {
         });
       });
   });
-  testFor404("get", "/api/users", "/api/user");
+  testFor404("get", "/api/users", "/api/user", "Route Not Found");
 });
 
 describe("GET /api/articles", () => {
@@ -190,8 +195,37 @@ describe("GET /api/articles", () => {
   testForSorting("votes");
   testForSorting("comment_count");
   testForSorting("article_id", "asc");
+  test("status:200, should respond with an array of objects with the same topics", () => {
+    return request(app)
+      .get("/api/articles?filter=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: "mitch",
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("status:200, should respond with a message when articles with a given topic do not exist", () => {
+    return request(app)
+      .get("/api/articles?filter=YO")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article Exists That Matches Your Query");
+      });
+  });
   testFor400("sort_by=DROP;&order_by=asc");
-  testFor404("get", "/api/articles", "/api/article");
+  testFor404("get", "/api/articles", "/api/article", "Route Not Found");
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -236,7 +270,8 @@ describe("GET /api/articles/:article_id/comments", () => {
   testFor404(
     "get",
     "/api/articles/:article_id/comments",
-    "/api/article/5/comment"
+    "/api/article/5/comment",
+    "Route Not Found"
   );
 });
 
@@ -294,14 +329,14 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-function testFor404(method, path, path404) {
+function testFor404(method, path, path404, msg) {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {
       return request(app)
         .get(`${path404}`)
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Route Not Found");
+          expect(body.msg).toBe(msg);
         });
     });
   });

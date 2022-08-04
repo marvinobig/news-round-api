@@ -51,7 +51,11 @@ exports.fetchUsers = async () => {
   return users.rows;
 };
 
-exports.fetchArticles = async (sort_by = "created_at", order_by = "desc") => {
+exports.fetchArticles = async (
+  sort_by = "created_at",
+  order_by = "desc",
+  filter = "[A-Za-z]"
+) => {
   const articleOrder = order_by.toUpperCase();
   const sortByGreenList = [
     "comment_count",
@@ -72,12 +76,18 @@ exports.fetchArticles = async (sort_by = "created_at", order_by = "desc") => {
   }
 
   const articles = await db.query(
-    `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${articleOrder};`
+    `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id WHERE topic ~ '${filter}' GROUP BY articles.article_id ORDER BY ${sort_by} ${articleOrder};`
   );
 
   articles.rows.forEach((article) => {
     article.comment_count = Number(article.comment_count);
   });
+
+  if (articles.rows.length === 0) {
+    throw new Error("No Article Exists That Matches Your Query", {
+      cause: 200,
+    });
+  }
 
   return articles.rows;
 };
