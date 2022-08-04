@@ -293,7 +293,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         );
       });
   });
-  test("status: 404, should respond with an error message when article does not exist", () => {
+  test("status:404, should respond with an error message when given article does not exist", () => {
     const newComment = { username: "rogerso", body: "this rocks" };
     return request(app)
       .post("/api/articles/100/comments")
