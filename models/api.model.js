@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const format = require("pg-format");
 
 exports.fetchTopics = async () => {
   const topics = await db.query("SELECT * FROM topics");
@@ -114,4 +113,18 @@ exports.insertArticleCommentById = async (id, commentData) => {
   );
 
   return insertComment.rows;
+};
+
+exports.removeCommentsById = async (id) => {
+  let deleted = true;
+  const removeComment = await db.query(
+    "DELETE FROM comments WHERE comment_id=$1 RETURNING *",
+    [id]
+  );
+
+  if (removeComment.rows.length === 0) {
+    deleted = false;
+  }
+
+  return deleted;
 };

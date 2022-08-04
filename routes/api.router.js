@@ -8,6 +8,7 @@ const {
   getArticlesController,
   getArticleCommentsByIdController,
   postArticleCommentByIdController,
+  deleteCommentsByIdController,
 } = require("../controllers/api.controller");
 
 router.get("/topics", getTopicsController);
@@ -17,5 +18,6 @@ router.get("/users", getUsersController);
 router.get("/articles", getArticlesController);
 router.get("/articles/:article_id/comments", getArticleCommentsByIdController);
 router.post("/articles/:article_id/comments", postArticleCommentByIdController);
+router.delete("/comments/:comment_id", deleteCommentsByIdController);
 
 module.exports = router;

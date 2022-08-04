@@ -329,6 +329,34 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status:204, should return a status of 204", () => {
+    return request(app).delete("/api/comments/5").expect(204);
+  });
+  test("status:400, should return an error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/fff")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  testFor404(
+    "get",
+    "/api/comments/:comment_id",
+    "/api/comment/5",
+    "Route Not Found"
+  );
+  test("status:404, should return error message when id given does not exist", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment Does Not Exist");
+      });
+  });
+});
+
 function testFor404(method, path, path404, msg) {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {
