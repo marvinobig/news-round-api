@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 exports.fetchTopics = async () => {
   const topics = await db.query("SELECT * FROM topics");
@@ -50,9 +51,28 @@ exports.fetchUsers = async () => {
   return users.rows;
 };
 
-exports.fetchArticles = async () => {
+exports.fetchArticles = async (sort_by = "created_at", order_by = "desc") => {
+  const articleOrder = order_by.toUpperCase();
+  const sortByGreenList = [
+    "comment_count",
+    "article_id",
+    "votes",
+    "topic",
+    "title",
+    "author",
+    "created_at",
+  ];
+  const orderByGreenList = ["DESC", "ASC"];
+
+  if (
+    !sortByGreenList.includes(sort_by) ||
+    !orderByGreenList.includes(articleOrder)
+  ) {
+    throw new Error("Invalid Query in URL", { cause: 400 });
+  }
+
   const articles = await db.query(
-    "SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;"
+    `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${articleOrder};`
   );
 
   articles.rows.forEach((article) => {

@@ -185,21 +185,12 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("status:200, should respond with array of article objects ordered by date in descending order", () => {
-    return request(app)
-      .get("/api/articles")
-      .then(({ body: { articles } }) => {
-        let isOrdered = true;
-
-        for (let i = 1; i < articles.length; i++) {
-          if (articles[i].created_at > articles[i - 1].created_at) {
-            isOrdered = false;
-          }
-        }
-
-        expect(isOrdered).toBe(true);
-      });
-  });
+  testForSorting();
+  testForSorting("article_id");
+  testForSorting("votes");
+  testForSorting("comment_count");
+  testForSorting("article_id", "asc");
+  testFor400("sort_by=DROP;&order_by=asc");
   testFor404("get", "/api/articles", "/api/article");
 });
 
@@ -313,5 +304,31 @@ function testFor404(method, path, path404) {
           expect(body.msg).toBe("Route Not Found");
         });
     });
+  });
+}
+
+function testFor400(query) {
+  test("status:400, should respond with an error message for incorrect query", () => {
+    return request(app)
+      .get(`/api/articles?${query}`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Query in URL");
+      });
+  });
+}
+
+function testForSorting(sort_by = "created_at", order_by = "desc") {
+  test(`status:200, should respond with array of article objects sorted by ${sort_by} in descending order`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=${sort_by}&order_by=${order_by}`)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        if (order_by === "desc") {
+          expect(articles).toBeSortedBy(sort_by, { descending: true });
+        } else {
+          expect(articles).toBeSortedBy(sort_by);
+        }
+      });
   });
 }
