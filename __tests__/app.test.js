@@ -19,7 +19,7 @@ describe("GET /api/topics", () => {
   test("status:200, should respond with an array of topic objects containing slug & description properties", () => {
     return request(app)
       .get("/api/topics")
-      .then(({ body: topics }) => {
+      .then(({ body: { topics } }) => {
         expect(topics).toBeInstanceOf(Array);
 
         topics.forEach((topic) => {
@@ -42,10 +42,10 @@ describe("GET /api/articles/:article_id", () => {
   test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
     return request(app)
       .get("/api/articles/5")
-      .then(({ body: article }) => {
-        expect(article).toBeInstanceOf(Array);
+      .then(({ body: { article } }) => {
+        expect(article).toBeInstanceOf(Object);
 
-        expect(article[0]).toEqual(
+        expect(article).toEqual(
           expect.objectContaining({
             article_id: expect.any(Number),
             title: expect.any(String),
@@ -57,7 +57,7 @@ describe("GET /api/articles/:article_id", () => {
             comment_count: expect.any(Number),
           })
         );
-        expect(article[0].comment_count).toBe(2);
+        expect(article.comment_count).toBe(2);
       });
   });
   test("status:400, should return error message when request is bad", () => {
@@ -88,18 +88,18 @@ describe("PATCH /api/articles/:article_id", () => {
     const inc_votes = { inc_votes: 2 };
     const article = await request(app)
       .get("/api/articles/5")
-      .then(({ body: article }) => {
-        return article[0];
+      .then(({ body: { article } }) => {
+        return article;
       });
 
     return request(app)
       .patch("/api/articles/5")
       .send(inc_votes)
       .expect(200)
-      .then(({ body: updatedArticle }) => {
+      .then(({ body: { updatedArticle } }) => {
         article.votes += inc_votes.inc_votes;
 
-        expect(article).toEqual(updatedArticle[0]);
+        expect(article).toEqual(updatedArticle);
       });
   });
   test("status:400, should return error when given a bad object in the request body", () => {
@@ -128,6 +128,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/100")
       .send(inc_votes)
+      .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Article 100 Not Found");
       });
@@ -141,7 +142,7 @@ describe("GET /api/users", () => {
   test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
     return request(app)
       .get("/api/users")
-      .then(({ body: users }) => {
+      .then(({ body: { users } }) => {
         expect(users).toBeInstanceOf(Array);
 
         users.forEach((user) => {
@@ -165,7 +166,7 @@ describe("GET /api/articles", () => {
   test("status:200, should respond with an array of an article objects containing article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
     return request(app)
       .get("/api/articles")
-      .then(({ body: articles }) => {
+      .then(({ body: { articles } }) => {
         expect(articles).toBeInstanceOf(Array);
 
         articles.forEach((article) => {
@@ -187,7 +188,7 @@ describe("GET /api/articles", () => {
   test("status:200, should respond with array of article objects ordered by date in descending order", () => {
     return request(app)
       .get("/api/articles")
-      .then(({ body: articles }) => {
+      .then(({ body: { articles } }) => {
         let isOrdered = true;
 
         for (let i = 1; i < articles.length; i++) {
@@ -209,7 +210,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("status:200, should respond with an array of comments for the given article_id", () => {
     return request(app)
       .get("/api/articles/5/comments")
-      .then(({ body: articleComments }) => {
+      .then(({ body: { articleComments } }) => {
         expect(articleComments).toBeInstanceOf(Array);
 
         articleComments.forEach((comment) => {
@@ -246,6 +247,60 @@ describe("GET /api/articles/:article_id/comments", () => {
     "/api/articles/:article_id/comments",
     "/api/article/5/comment"
   );
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("status:201, should respond with the object that was sent", () => {
+    const newComment = { username: "rogersop", body: "this rocks" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { newComment } }) => {
+        expect(newComment).toBeInstanceOf(Object);
+
+        expect(newComment).toEqual(
+          expect.objectContaining({
+            article_id: 5,
+            author: "rogersop",
+            body: "this rocks",
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("status:400, should respond with error message when given an empty object", () => {
+    const newComment = {};
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:404, should respond with error message when given username that does not exist", () => {
+    const newComment = { username: 444, body: "" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username or Article Does Not Exist");
+      });
+  });
+  test("status:404, should respond with an error message when given article does not exist", () => {
+    const newComment = { username: "rogerso", body: "this rocks" };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username or Article Does Not Exist");
+      });
+  });
 });
 
 function testFor404(method, path, path404) {
