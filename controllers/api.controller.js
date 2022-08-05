@@ -1,4 +1,5 @@
 const {
+  fetchEndpoints,
   fetchTopics,
   fetchArticleById,
   changeArticleById,
@@ -8,6 +9,12 @@ const {
   insertArticleCommentById,
   removeCommentsById,
 } = require("../models/api.model");
+
+exports.getEndpointsController = (req, res, next) => {
+  const endpoints = fetchEndpoints();
+  const endpointsObj = { newsRoundApi: endpoints };
+  res.status(200).send(endpointsObj);
+};
 
 exports.getTopicsController = async (req, res) => {
   const topics = await fetchTopics();

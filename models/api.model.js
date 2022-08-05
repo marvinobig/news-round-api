@@ -1,5 +1,11 @@
 const db = require("../db/connection");
 
+exports.fetchEndpoints = () => {
+  const endpoints = require("../endpoints");
+
+  return endpoints;
+};
+
 exports.fetchTopics = async () => {
   const topics = await db.query("SELECT * FROM topics");
 
