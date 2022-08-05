@@ -6,6 +6,7 @@ const {
   fetchArticles,
   fetchArticleCommentsById,
   insertArticleCommentById,
+  removeCommentsById,
 } = require("../models/api.model");
 
 exports.getTopicsController = async (req, res) => {
@@ -77,6 +78,18 @@ exports.postArticleCommentByIdController = async (req, res, next) => {
     const newCommentObj = { newComment: newComment[0] };
 
     res.status(201).send(newCommentObj);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteCommentsByIdController = async (req, res, next) => {
+  try {
+    const id = Number(req.params.comment_id);
+    const deletedComment = await removeCommentsById(id);
+
+    if (deletedComment) res.sendStatus(204);
+    else throw new Error("Comment Does Not Exist", { cause: 404 });
   } catch (err) {
     next(err);
   }
