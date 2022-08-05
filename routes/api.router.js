@@ -10,6 +10,7 @@ const {
   postArticleCommentByIdController,
   deleteCommentsByIdController,
   getEndpointsController,
+  getUserByIdController,
 } = require("../controllers/api.controller");
 
 router.get("/", getEndpointsController);
@@ -20,6 +21,7 @@ router.patch("/articles/:article_id", updateArticleByIdController);
 router.get("/articles/:article_id/comments", getArticleCommentsByIdController);
 router.post("/articles/:article_id/comments", postArticleCommentByIdController);
 router.get("/users", getUsersController);
+router.get("/users/:username", getUserByIdController);
 router.delete("/comments/:comment_id", deleteCommentsByIdController);
 
 module.exports = router;
