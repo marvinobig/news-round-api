@@ -403,6 +403,29 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+describe("DELETE /api/articles/:artical_id", () => {
+  test("status:204, should return a status of 204", () => {
+    return request(app).delete("/api/articles/6").expect(204);
+  });
+  test("status:400, should return an error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/articles/fff")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  testFor404("DELETE", "/api/articles/:article_id", "/api/article/3");
+  test("status:404, should return error message when id given does not exist", () => {
+    return request(app)
+      .delete("/api/articles/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article Does Not Exist");
+      });
+  });
+});
+
 function testFor404(method, path, path404, msg = "Route Not Found") {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {

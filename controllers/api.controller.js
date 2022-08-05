@@ -9,6 +9,7 @@ const {
   insertArticleCommentById,
   removeCommentsById,
   fetchUserById,
+  removeArticleById,
 } = require("../models/api.model");
 
 exports.getEndpointsController = async (req, res, next) => {
@@ -112,6 +113,19 @@ exports.getUserByIdController = async (req, res, next) => {
 
     res.status(200).send(userObj);
   } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteArticleByIdController = async (req, res, next) => {
+  try {
+    const id = Number(req.params.article_id);
+    const deletedArticle = await removeArticleById(id);
+
+    if (deletedArticle) res.sendStatus(204);
+    else throw new Error("Article Does Not Exist", { cause: 404 });
+  } catch (err) {
+    console.log(err);
     next(err);
   }
 };
