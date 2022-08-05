@@ -1,4 +1,14 @@
 const db = require("../db/connection");
+const fs = require("fs/promises");
+
+exports.fetchEndpoints = async () => {
+  const endpoints = await fs.readFile(
+    `${__dirname}/../endpoints.json`,
+    "utf-8"
+  );
+
+  return endpoints;
+};
 
 exports.fetchTopics = async () => {
   const topics = await db.query("SELECT * FROM topics");

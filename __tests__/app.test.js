@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
+const endpointData = require("../endpoints");
 
 beforeEach(() => {
   return seed(testData);
@@ -10,6 +11,18 @@ beforeEach(() => {
 
 afterAll(() => {
   return db.end();
+});
+
+describe("GET /api", () => {
+  test("status:200, should respond with a status of 200 and an object containing info on endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { newsRoundApi } }) => {
+        expect(newsRoundApi).toEqual(endpointData);
+      });
+  });
+  testFor404("get", "/api", "/apis", "Route Not Found");
 });
 
 describe("GET /api/topics", () => {
@@ -357,7 +370,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-function testFor404(method, path, path404, msg) {
+function testFor404(method, path, path404, msg = "Route Not Found") {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {
       return request(app)
