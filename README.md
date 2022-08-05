@@ -66,7 +66,7 @@ npm run test utils.test.js
   
 - Node JS (version 18.4.0)
   
-- Express JS
+- Express JS (version 4.18.1)
 
 - PostgreSQL (version 14.3)
 
