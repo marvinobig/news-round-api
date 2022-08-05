@@ -32,7 +32,7 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  testFor404("get", "/api/topics", "/api/topic");
+  testFor404("get", "/api/topics", "/api/topic", "Route Not Found");
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -68,7 +68,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Invalid Request");
       });
   });
-  testFor404("get", "/api/articles/:article_id", "/api/article/5");
+  testFor404(
+    "get",
+    "/api/articles/:article_id",
+    "/api/article/5",
+    "Route Not Found"
+  );
   test("status:404, should return error message when id given is not available", () => {
     return request(app)
       .get("/api/articles/20")
@@ -156,7 +161,7 @@ describe("GET /api/users", () => {
         });
       });
   });
-  testFor404("get", "/api/users", "/api/user");
+  testFor404("get", "/api/users", "/api/user", "Route Not Found");
 });
 
 describe("GET /api/articles", () => {
@@ -185,22 +190,42 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("status:200, should respond with array of article objects ordered by date in descending order", () => {
+  testForSorting();
+  testForSorting("article_id");
+  testForSorting("votes");
+  testForSorting("comment_count");
+  testForSorting("article_id", "asc");
+  test("status:200, should respond with an array of objects with the same topics", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?filter=mitch")
+      .expect(200)
       .then(({ body: { articles } }) => {
-        let isOrdered = true;
-
-        for (let i = 1; i < articles.length; i++) {
-          if (articles[i].created_at > articles[i - 1].created_at) {
-            isOrdered = false;
-          }
-        }
-
-        expect(isOrdered).toBe(true);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: "mitch",
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
       });
   });
-  testFor404("get", "/api/articles", "/api/article");
+  test("status:200, should respond with a message when articles with a given topic do not exist", () => {
+    return request(app)
+      .get("/api/articles?filter=YO")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No Article Exists That Matches Your Query");
+      });
+  });
+  testFor400("sort_by=DROP;&order_by=asc");
+  testFor404("get", "/api/articles", "/api/article", "Route Not Found");
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -245,7 +270,8 @@ describe("GET /api/articles/:article_id/comments", () => {
   testFor404(
     "get",
     "/api/articles/:article_id/comments",
-    "/api/article/5/comment"
+    "/api/article/5/comment",
+    "Route Not Found"
   );
 });
 
@@ -303,15 +329,41 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-function testFor404(method, path, path404) {
+function testFor404(method, path, path404, msg) {
   describe(`404 test for ${method.toUpperCase()} ${path}`, () => {
     test("status:404, should return error message when path is not found", () => {
       return request(app)
         .get(`${path404}`)
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Route Not Found");
+          expect(body.msg).toBe(msg);
         });
     });
+  });
+}
+
+function testFor400(query) {
+  test("status:400, should respond with an error message for incorrect query", () => {
+    return request(app)
+      .get(`/api/articles?${query}`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Query in URL");
+      });
+  });
+}
+
+function testForSorting(sort_by = "created_at", order_by = "desc") {
+  test(`status:200, should respond with array of article objects sorted by ${sort_by} in descending order`, () => {
+    return request(app)
+      .get(`/api/articles?sort_by=${sort_by}&order_by=${order_by}`)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        if (order_by === "desc") {
+          expect(articles).toBeSortedBy(sort_by, { descending: true });
+        } else {
+          expect(articles).toBeSortedBy(sort_by);
+        }
+      });
   });
 }

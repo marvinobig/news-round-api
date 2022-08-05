@@ -46,10 +46,15 @@ exports.getUsersController = async (req, res) => {
   res.status(200).send(usersObj);
 };
 
-exports.getArticlesController = async (req, res) => {
-  const articles = await fetchArticles();
-  const articlesObj = { articles };
-  res.status(200).send(articlesObj);
+exports.getArticlesController = async (req, res, next) => {
+  try {
+    const { sort_by, order_by, filter } = req.query;
+    const articles = await fetchArticles(sort_by, order_by, filter);
+    const articlesObj = { articles };
+    res.status(200).send(articlesObj);
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getArticleCommentsByIdController = async (req, res, next) => {
