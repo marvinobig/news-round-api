@@ -1,7 +1,11 @@
 const db = require("../db/connection");
+const fs = require("fs/promises");
 
-exports.fetchEndpoints = () => {
-  const endpoints = require("../endpoints");
+exports.fetchEndpoints = async () => {
+  const endpoints = await fs.readFile(
+    `${__dirname}/../endpoints.json`,
+    "utf-8"
+  );
 
   return endpoints;
 };

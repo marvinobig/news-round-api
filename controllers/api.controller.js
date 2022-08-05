@@ -10,9 +10,10 @@ const {
   removeCommentsById,
 } = require("../models/api.model");
 
-exports.getEndpointsController = (req, res, next) => {
-  const endpoints = fetchEndpoints();
-  const endpointsObj = { newsRoundApi: endpoints };
+exports.getEndpointsController = async (req, res, next) => {
+  const endpoints = await fetchEndpoints();
+  const endpointsObj = { newsRoundApi: JSON.parse(endpoints) };
+
   res.status(200).send(endpointsObj);
 };
 
