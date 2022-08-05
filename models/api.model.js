@@ -148,3 +148,18 @@ exports.fetchUserById = async (id) => {
 
   return user.rows[0];
 };
+
+exports.removeArticleById = async (id) => {
+  let deleted = true;
+
+  const removeArticle = await db.query(
+    "DELETE FROM articles WHERE article_id=$1 RETURNING *",
+    [id]
+  );
+
+  if (removeArticle.rows.length === 0) {
+    deleted = false;
+  }
+
+  return deleted;
+};
