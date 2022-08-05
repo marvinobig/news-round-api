@@ -382,7 +382,7 @@ function testFor400(query) {
 }
 
 function testForSorting(sort_by = "created_at", order_by = "desc") {
-  test(`status:200, should respond with array of article objects sorted by ${sort_by} in descending order`, () => {
+  test(`status:200, should respond with array of article objects sorted by ${sort_by} in ${order_by.toUpperCase()} order`, () => {
     return request(app)
       .get(`/api/articles?sort_by=${sort_by}&order_by=${order_by}`)
       .expect(200)
