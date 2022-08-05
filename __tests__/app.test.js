@@ -48,135 +48,6 @@ describe("GET /api/topics", () => {
   testFor404("get", "/api/topics", "/api/topic", "Route Not Found");
 });
 
-describe("GET /api/articles/:article_id", () => {
-  test("status:200, should return a status of 200", () => {
-    return request(app).get("/api/articles/5").expect(200);
-  });
-  test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
-    return request(app)
-      .get("/api/articles/5")
-      .then(({ body: { article } }) => {
-        expect(article).toBeInstanceOf(Object);
-
-        expect(article).toEqual(
-          expect.objectContaining({
-            article_id: expect.any(Number),
-            title: expect.any(String),
-            topic: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            comment_count: expect.any(Number),
-          })
-        );
-        expect(article.comment_count).toBe(2);
-      });
-  });
-  test("status:400, should return error message when request is bad", () => {
-    return request(app)
-      .get("/api/articles/bb")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Request");
-      });
-  });
-  testFor404(
-    "get",
-    "/api/articles/:article_id",
-    "/api/article/5",
-    "Route Not Found"
-  );
-  test("status:404, should return error message when id given is not available", () => {
-    return request(app)
-      .get("/api/articles/20")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("ID Not Found");
-      });
-  });
-});
-
-describe("PATCH /api/articles/:article_id", () => {
-  test("status:200, should return a status of 200", () => {
-    const inc_votes = { inc_votes: 2 };
-    return request(app).patch("/api/articles/5").send(inc_votes).expect(200);
-  });
-  test("status:200, should return the article with the vote property updated", async () => {
-    const inc_votes = { inc_votes: 2 };
-    const article = await request(app)
-      .get("/api/articles/5")
-      .then(({ body: { article } }) => {
-        return article;
-      });
-
-    return request(app)
-      .patch("/api/articles/5")
-      .send(inc_votes)
-      .expect(200)
-      .then(({ body: { updatedArticle } }) => {
-        article.votes += inc_votes.inc_votes;
-
-        expect(article).toEqual(updatedArticle);
-      });
-  });
-  test("status:400, should return error when given a bad object in the request body", () => {
-    const inc_votes = { inc_votes: "fff" };
-
-    return request(app)
-      .patch("/api/articles/5")
-      .send(inc_votes)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Request");
-      });
-  });
-  test("status:400, should return error when given an empty object", () => {
-    const inc_votes = {};
-    return request(app)
-      .patch("/api/articles/5")
-      .send(inc_votes)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Request Body is Missing Some Fields");
-      });
-  });
-  test("status:404, should return error when article does not exist", () => {
-    const inc_votes = { inc_votes: 2 };
-    return request(app)
-      .patch("/api/articles/100")
-      .send(inc_votes)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Article 100 Not Found");
-      });
-  });
-});
-
-describe("GET /api/users", () => {
-  test("status:200, should return a status of 200", () => {
-    return request(app).get("/api/users").expect(200);
-  });
-  test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
-    return request(app)
-      .get("/api/users")
-      .then(({ body: { users } }) => {
-        expect(users).toBeInstanceOf(Array);
-
-        users.forEach((user) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-  testFor404("get", "/api/users", "/api/user", "Route Not Found");
-});
-
 describe("GET /api/articles", () => {
   test("status:200, should return a status of 200", () => {
     return request(app).get("/api/articles").expect(200);
@@ -241,6 +112,55 @@ describe("GET /api/articles", () => {
   testFor404("get", "/api/articles", "/api/article", "Route Not Found");
 });
 
+describe("GET /api/articles/:article_id", () => {
+  test("status:200, should return a status of 200", () => {
+    return request(app).get("/api/articles/5").expect(200);
+  });
+  test("status:200, should respond with an array of an article object with article_id, title, topic, author, body, created_at, votes & comment_count properties", () => {
+    return request(app)
+      .get("/api/articles/5")
+      .then(({ body: { article } }) => {
+        expect(article).toBeInstanceOf(Object);
+
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          })
+        );
+        expect(article.comment_count).toBe(2);
+      });
+  });
+  test("status:400, should return error message when request is bad", () => {
+    return request(app)
+      .get("/api/articles/bb")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  testFor404(
+    "get",
+    "/api/articles/:article_id",
+    "/api/article/5",
+    "Route Not Found"
+  );
+  test("status:404, should return error message when id given is not available", () => {
+    return request(app)
+      .get("/api/articles/20")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID Not Found");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("status:200, should return a status of 200", () => {
     return request(app).get("/api/articles/5/comments").expect(200);
@@ -286,6 +206,119 @@ describe("GET /api/articles/:article_id/comments", () => {
     "/api/article/5/comment",
     "Route Not Found"
   );
+});
+
+describe("GET /api/users", () => {
+  test("status:200, should return a status of 200", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+  test("status:200, should respond with an array of user objects containing username, name & avatar_url properties", () => {
+    return request(app)
+      .get("/api/users")
+      .then(({ body: { users } }) => {
+        expect(users).toBeInstanceOf(Array);
+
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  testFor404("get", "/api/users", "/api/user", "Route Not Found");
+});
+
+describe("GET /api/users/:username", () => {
+  test("status:200, should respond with a status of 200 and an object with username, avatar_url & name properties", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toBeInstanceOf(Object);
+
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: expect.any(String),
+            avatar_url: expect.any(String),
+            name: expect.any(String),
+          })
+        );
+      });
+  });
+  test("status:200, should return message when id given is not available", () => {
+    return request(app)
+      .get("/api/users/20")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("That User Does Not Exist");
+      });
+  });
+  testFor404(
+    "get",
+    "/api/users/:username",
+    "/api/user/rogersop",
+    "Route Not Found"
+  );
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("status:200, should return a status of 200", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app).patch("/api/articles/5").send(inc_votes).expect(200);
+  });
+  test("status:200, should return the article with the vote property updated", async () => {
+    const inc_votes = { inc_votes: 2 };
+    const article = await request(app)
+      .get("/api/articles/5")
+      .then(({ body: { article } }) => {
+        return article;
+      });
+
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        article.votes += inc_votes.inc_votes;
+
+        expect(article).toEqual(updatedArticle);
+      });
+  });
+  test("status:400, should return error when given a bad object in the request body", () => {
+    const inc_votes = { inc_votes: "fff" };
+
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Request");
+      });
+  });
+  test("status:400, should return error when given an empty object", () => {
+    const inc_votes = {};
+    return request(app)
+      .patch("/api/articles/5")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:404, should return error when article does not exist", () => {
+    const inc_votes = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/100")
+      .send(inc_votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article 100 Not Found");
+      });
+  });
 });
 
 describe("POST /api/articles/:article_id/comments", () => {

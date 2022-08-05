@@ -26,7 +26,7 @@ exports.fetchArticleById = async (id) => {
     throw new Error("ID Not Found", { cause: 404 });
   } else article.rows[0].comment_count = Number(article.rows[0].comment_count);
 
-  return article.rows;
+  return article.rows[0];
 };
 
 exports.changeArticleById = async (id, inc_votes) => {
@@ -51,7 +51,7 @@ exports.changeArticleById = async (id, inc_votes) => {
       updatedArticle.rows[0].comment_count
     );
 
-  return updatedArticle.rows;
+  return updatedArticle.rows[0];
 };
 
 exports.fetchUsers = async () => {
@@ -122,7 +122,7 @@ exports.insertArticleCommentById = async (id, commentData) => {
     [id, username, body]
   );
 
-  return insertComment.rows;
+  return insertComment.rows[0];
 };
 
 exports.removeCommentsById = async (id) => {
@@ -137,4 +137,14 @@ exports.removeCommentsById = async (id) => {
   }
 
   return deleted;
+};
+
+exports.fetchUserById = async (id) => {
+  const user = await db.query("SELECT * FROM users WHERE username=$1;", [id]);
+
+  if (user.rows.length === 0) {
+    throw new Error("That User Does Not Exist", { cause: 200 });
+  }
+
+  return user.rows[0];
 };

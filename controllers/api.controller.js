@@ -8,6 +8,7 @@ const {
   fetchArticleCommentsById,
   insertArticleCommentById,
   removeCommentsById,
+  fetchUserById,
 } = require("../models/api.model");
 
 exports.getEndpointsController = async (req, res, next) => {
@@ -28,7 +29,7 @@ exports.getArticleByIdController = async (req, res, next) => {
   try {
     const id = Number(req.params.article_id);
     const article = await fetchArticleById(id);
-    const articleObj = { article: article[0] };
+    const articleObj = { article };
 
     res.status(200).send(articleObj);
   } catch (err) {
@@ -41,7 +42,7 @@ exports.updateArticleByIdController = async (req, res, next) => {
     const id = Number(req.params.article_id);
     const inc_votesNum = req.body.inc_votes;
     const updatedArticle = await changeArticleById(id, inc_votesNum);
-    const updatedArticleObj = { updatedArticle: updatedArticle[0] };
+    const updatedArticleObj = { updatedArticle };
 
     res.status(200).send(updatedArticleObj);
   } catch (err) {
@@ -83,7 +84,7 @@ exports.postArticleCommentByIdController = async (req, res, next) => {
     const commentData = req.body;
     const id = Number(req.params.article_id);
     const newComment = await insertArticleCommentById(id, commentData);
-    const newCommentObj = { newComment: newComment[0] };
+    const newCommentObj = { newComment };
 
     res.status(201).send(newCommentObj);
   } catch (err) {
@@ -98,6 +99,18 @@ exports.deleteCommentsByIdController = async (req, res, next) => {
 
     if (deletedComment) res.sendStatus(204);
     else throw new Error("Comment Does Not Exist", { cause: 404 });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getUserByIdController = async (req, res, next) => {
+  try {
+    const id = req.params.username;
+    const user = await fetchUserById(id);
+    const userObj = { user };
+
+    res.status(200).send(userObj);
   } catch (err) {
     next(err);
   }
