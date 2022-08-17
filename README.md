@@ -8,18 +8,18 @@ This is the news round API, it is your one stop for articles on numerous topics 
 
 ## Endpoints
 
-- GET ```/``` -> serves up a json representation of all the available endpoints of the news-round api
-- GET ```/api/topics``` -> serves an array of all topics
-- GET ```/api/articles``` -> serves an array of all articles sorted by any property in the article object and/or ordered in ascending or descending order. Can also filter by topic
-- GET ```/api/articles/:article_id``` -> serves an article object matching the given article ID
-- UPDATE ```/api/articles/:Article_id``` -> updates the vote property of an article object matching the given article ID
-- GET ```/api/articles/:article_id/comments``` -> serves an array of all comments on a specific article matching the given article ID
-- POST ```/api/articles/:article_id/comments``` -> posts a comment on a specific article matching the given article ID
-- GET ```/api/users``` -> serves an array of all users
-- DELETE ```/api/comments/comment_id``` -> deletes a comment matching the given comment_id
-- GET ```/api/users/:username``` -> serves an object of a user by their username
-- DELETE ```/api/articles/:article_id``` -> deletes an article matching the given article_id
-- POST ```/api/articles``` -> adds an article to the api
+- GET `/` -> serves up a json representation of all the available endpoints of the news-round api
+- GET `/api/topics` -> serves an array of all topics
+- GET `/api/articles` -> serves an array of all articles sorted by any property in the article object and/or ordered in ascending or descending order. Can also filter by topic
+- GET `/api/articles/:article_id` -> serves an article object matching the given article ID
+- UPDATE `/api/articles/:Article_id` -> updates the vote property of an article object matching the given article ID
+- GET `/api/articles/:article_id/comments` -> serves an array of all comments on a specific article matching the given article ID
+- POST `/api/articles/:article_id/comments` -> posts a comment on a specific article matching the given article ID
+- GET `/api/users` -> serves an array of all users
+- DELETE `/api/comments/comment_id` -> deletes a comment matching the given comment_id
+- GET `/api/users/:username` -> serves an object of a user by their username
+- DELETE `/api/articles/:article_id` -> deletes an article matching the given article_id
+- POST `/api/articles` -> adds an article to the api
 
 ## Using The Project Locally
 
@@ -27,31 +27,31 @@ This is the news round API, it is your one stop for articles on numerous topics 
 
 To clone this repo, enter into the terminal and type
 
-``` text
+` text
 git clone https://github.com/marvinobig/news-round-api.git
-```
+`
 
 ### Install Dependencies
 
 To install the projects dependencies, type into the terminal
 
-``` text
+` text
 npm i
-```
+`
 
 ### Setup Local Database
 
 - To setup the databases, run
   
-``` text
+` text
 npm run setup-dbs
-```
+`
 
 - To add data to the database, run
 
-``` text
+` text
 npm run seed
-```
+`
   
 - To access the databases (test & development) locally, create two .env files titled (.env.test & .env.development).
 
@@ -59,21 +59,21 @@ npm run seed
 
 - To run all available test suites, run
 
-``` text
+` text
 npm run test
-```
+`
 
 - To run a specific suite, run
 
-``` text
+` text
 npm run test app.test.js
-```
+`
 
 or
 
-``` text
+` text
 npm run test utils.test.js
-```
+`
 
 ## Languages/Tools Used
 
