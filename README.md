@@ -27,31 +27,31 @@ This is the news round API, it is your one stop for articles on numerous topics 
 
 To clone this repo, enter into the terminal and type
 
-` text
+``` text
 git clone https://github.com/marvinobig/news-round-api.git
-`
+```
 
 ### Install Dependencies
 
 To install the projects dependencies, type into the terminal
 
-` text
+``` text
 npm i
-`
+```
 
 ### Setup Local Database
 
 - To setup the databases, run
   
-` text
+``` text
 npm run setup-dbs
-`
+```
 
 - To add data to the database, run
 
-` text
+``` text
 npm run seed
-`
+```
   
 - To access the databases (test & development) locally, create two .env files titled (.env.test & .env.development).
 
@@ -59,21 +59,21 @@ npm run seed
 
 - To run all available test suites, run
 
-` text
+``` text
 npm run test
-`
+```
 
 - To run a specific suite, run
 
-` text
+``` text
 npm run test app.test.js
-`
+```
 
 or
 
-` text
+``` text
 npm run test utils.test.js
-`
+```
 
 ## Languages/Tools Used
 
