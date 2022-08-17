@@ -13,16 +13,16 @@ afterAll(() => {
   return db.end();
 });
 
-describe("GET /api", () => {
+describe("GET /", () => {
   test("status:200, should respond with a status of 200 and an object containing info on endpoints", () => {
     return request(app)
-      .get("/api")
+      .get("/")
       .expect(200)
       .then(({ body: { newsRoundApi } }) => {
         expect(newsRoundApi).toEqual(endpointData);
       });
   });
-  testFor404("get", "/api", "/apis", "Route Not Found");
+  testFor404("get", "/", "/s", "Route Not Found");
 });
 
 describe("GET /api/topics", () => {
@@ -422,6 +422,77 @@ describe("DELETE /api/articles/:artical_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Article Does Not Exist");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("status:201, should respond with the object that was sent", () => {
+    const newArticle = {
+      title: "The Notorious MSG’s Unlikely Formula For Success",
+      topic: "mitch",
+      author: "rogersop",
+      body: "The 'umami' craze has turned a much-maligned and misunderstood food additive into an object of obsession for the world’s most innovative chefs. But secret ingredient monosodium glutamate’s biggest secret may be that there was never anything wrong with it at all.",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { newArticle } }) => {
+        expect(newArticle).toBeInstanceOf(Object);
+
+        expect(newArticle).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: "The Notorious MSG’s Unlikely Formula For Success",
+            author: "rogersop",
+            body: "The 'umami' craze has turned a much-maligned and misunderstood food additive into an object of obsession for the world’s most innovative chefs. But secret ingredient monosodium glutamate’s biggest secret may be that there was never anything wrong with it at all.",
+            topic: "mitch",
+            created_at: expect.any(String),
+            comment_count: expect.any(Number),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("status:400, should respond with error message when given an empty object", () => {
+    const newArticle = {};
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Request Body is Missing Some Fields");
+      });
+  });
+  test("status:404, should respond with error message when given username that does not exist", () => {
+    const newArticle = {
+      title: "The Notorious MSG’s Unlikely Formula For Success",
+      topic: "mitch",
+      author: "grumpy19",
+      body: "The 'umami' craze has turned a much-maligned and misunderstood food additive into an object of obsession for the world’s most innovative chefs. But secret ingredient monosodium glutamate’s biggest secret may be that there was never anything wrong with it at all.",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username or Topic Does Not Exist");
+      });
+  });
+  test("status:404, should respond with error message when given topic that does not exist", () => {
+    const newArticle = {
+      title: "The Notorious MSG’s Unlikely Formula For Success",
+      topic: "cooking",
+      author: "rogersop",
+      body: "The 'umami' craze has turned a much-maligned and misunderstood food additive into an object of obsession for the world’s most innovative chefs. But secret ingredient monosodium glutamate’s biggest secret may be that there was never anything wrong with it at all.",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username or Topic Does Not Exist");
       });
   });
 });

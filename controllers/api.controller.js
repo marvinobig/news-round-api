@@ -10,6 +10,7 @@ const {
   removeCommentsById,
   fetchUserById,
   removeArticleById,
+  insertArticle,
 } = require("../models/api.model");
 
 exports.getEndpointsController = async (req, res, next) => {
@@ -125,7 +126,20 @@ exports.deleteArticleByIdController = async (req, res, next) => {
     if (deletedArticle) res.sendStatus(204);
     else throw new Error("Article Does Not Exist", { cause: 404 });
   } catch (err) {
-    console.log(err);
     next(err);
+  }
+};
+
+exports.postArticlesController = async (req, res, next) => {
+  try {
+    const articleData = req.body;
+    const newArticle = await insertArticle(articleData);
+    const newArticleObj = { newArticle };
+
+    res.status(201).send(newArticleObj);
+  } catch (err) {
+    if (err.code === "23503") {
+      res.status(404).send({ msg: "Username or Topic Does Not Exist" });
+    } else next(err);
   }
 };

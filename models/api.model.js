@@ -163,3 +163,23 @@ exports.removeArticleById = async (id) => {
 
   return deleted;
 };
+
+exports.insertArticle = async (articleData) => {
+  const { author, title, body, topic } = articleData;
+
+  const insertArticle = await db.query(
+    "INSERT INTO articles(author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *",
+    [author, title, body, topic]
+  );
+
+  const addedArticle = await db.query(
+    "SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id=comments.article_id WHERE articles.article_id=$1 GROUP BY articles.article_id;",
+    [insertArticle.rows[0].article_id]
+  );
+
+  addedArticle.rows[0].comment_count = Number(
+    addedArticle.rows[0].comment_count
+  );
+
+  return addedArticle.rows[0];
+};
