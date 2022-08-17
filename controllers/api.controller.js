@@ -8,7 +8,7 @@ const {
   fetchArticleCommentsById,
   insertArticleCommentById,
   removeCommentsById,
-  fetchUserById,
+  fetchUserByUsername,
   removeArticleById,
   insertArticle,
 } = require("../models/api.model");
@@ -106,10 +106,10 @@ exports.deleteCommentsByIdController = async (req, res, next) => {
   }
 };
 
-exports.getUserByIdController = async (req, res, next) => {
+exports.getUserByUsernameController = async (req, res, next) => {
   try {
     const id = req.params.username;
-    const user = await fetchUserById(id);
+    const user = await fetchUserByUsername(id);
     const userObj = { user };
 
     res.status(200).send(userObj);

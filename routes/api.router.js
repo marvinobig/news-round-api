@@ -9,7 +9,7 @@ const {
   getArticleCommentsByIdController,
   postArticleCommentByIdController,
   deleteCommentsByIdController,
-  getUserByIdController,
+  getUserByUsernameController,
   deleteArticleByIdController,
   postArticlesController,
 } = require("../controllers/api.controller");
@@ -22,7 +22,7 @@ router.patch("/articles/:article_id", updateArticleByIdController);
 router.get("/articles/:article_id/comments", getArticleCommentsByIdController);
 router.post("/articles/:article_id/comments", postArticleCommentByIdController);
 router.get("/users", getUsersController);
-router.get("/users/:username", getUserByIdController);
+router.get("/users/:username", getUserByUsernameController);
 router.delete("/comments/:comment_id", deleteCommentsByIdController);
 router.delete("/articles/:article_id", deleteArticleByIdController);
 

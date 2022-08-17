@@ -139,7 +139,7 @@ exports.removeCommentsById = async (id) => {
   return deleted;
 };
 
-exports.fetchUserById = async (id) => {
+exports.fetchUserByUsername = async (id) => {
   const user = await db.query("SELECT * FROM users WHERE username=$1;", [id]);
 
   if (user.rows.length === 0) {
