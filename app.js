@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
 const apiRoutes = require("./routes/api.router");
+const { getEndpointsController } = require("./controllers/api.controller");
 
 app.use(express.json());
+
+app.get("/", getEndpointsController);
 
 app.use("/api", apiRoutes);
 
