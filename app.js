@@ -1,12 +1,13 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const apiRoutes = require("./routes/api.router");
 const { getEndpointsController } = require("./controllers/api.controller");
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", getEndpointsController);
-
 app.use("/api", apiRoutes);
 
 ////////////////////////////////////////////////////////////////////////////////
